@@ -6,6 +6,8 @@
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define SCREEN_I2C_ADDR 0x3C
+#define INTRO_DELAY 3000
+#define REFRESH_DELAY 25
 
 
 #define CHAR_WIDTH 5
@@ -46,7 +48,7 @@ void loop() {
     drawString(CommonDisplayPOS[0] - 42, CommonDisplayPOS[1], DisplaySTRS[1], 0, 0);
     drawString(CommonDisplayPOS[0] - 24, CommonDisplayPOS[1] + 8, DisplaySTRS[2], 0, 0);
     spectogramDisplay.display();
-    delay(3000);
+    delay(INTRO_DELAY);
     spectogramDisplay.clearDisplay();
     spectogramDisplay.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFF);
     drawString(CommonDisplayPOS[2] - 12, CommonDisplayPOS[3], DisplaySTRS[3], 0, 0);
@@ -55,11 +57,13 @@ void loop() {
     currentState = SpectogramSTATES::MAIN_PAGE;
   }
   else if (currentState == SpectogramSTATES::MAIN_PAGE) {
-    spectogramDisplay.fillRect(0, 0, SCREEN_WIDTH, CommonDisplayPOS[3] - 5, 0xFFFF);
+    spectogramDisplay.fillRect(0, 0, SCREEN_WIDTH, CommonDisplayPOS[3], 0xFFFF);
 
     drawBar(CommonDisplayPOS[2] - 6, CommonDisplayPOS[3] - 5, BasePIN);
+    drawBar(CommonDisplayPOS[0] - 4, CommonDisplayPOS[3] - 5, MidPIN);
+    drawBar(((5 * SCREEN_WIDTH) / 6) - 9, CommonDisplayPOS[3] - 5, TreblePIN);
     spectogramDisplay.display();
-    delay(25);
+    delay(REFRESH_DELAY);
   }
   else {
     //unknown state, reset
@@ -81,6 +85,5 @@ void drawBar(int16_t x, int16_t y, const int pin) {
   int pinValue = analogRead(pin);
   int height_pos = map(pinValue, 0, 1023, y, (SCREEN_HEIGHT / 4));
   int height = (y - height_pos);
-
   spectogramDisplay.fillRect(x, height_pos, (SCREEN_WIDTH / 10), height, 0);
 }
